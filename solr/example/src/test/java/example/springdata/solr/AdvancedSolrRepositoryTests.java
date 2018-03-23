@@ -89,6 +89,7 @@ public class AdvancedSolrRepositoryTests {
 
 	@Autowired
 	ProductRepository repository;
+
 	@Autowired
 	SolrOperations operations;
 
@@ -124,7 +125,7 @@ public class AdvancedSolrRepositoryTests {
 
 		Query query = new SimpleQuery(where(exists("popularity"))).addProjectionOnField("score");
 
-		operations.queryForPage("techproducts", query, Product.class).forEach(System.out::println);
+		operations.queryForPage("solr/techproducts", query, Product.class).forEach(System.out::println);
 	}
 
 	/**
@@ -142,16 +143,16 @@ public class AdvancedSolrRepositoryTests {
 		Query query = new SimpleQuery(where("id").is(xbox.getId()));
 
 		// add document but delay commit for 3 seconds
-		operations.saveBean("techproducts", xbox, Duration.ofSeconds(3));
+		operations.saveBean("solr/techproducts", xbox, Duration.ofSeconds(3));
 
 		// document will not be returned hence not yet committed to the index
-		assertThat(operations.queryForObject("techproducts", query, Product.class), is(Optional.empty()));
+		assertThat(operations.queryForObject("solr/techproducts", query, Product.class), is(Optional.empty()));
 
 		// realtime-get fetches uncommitted document
-		assertThat(operations.getById("techproducts", xbox.getId(), Product.class), notNullValue());
+		assertThat(operations.getById("solr/techproducts", xbox.getId(), Product.class), notNullValue());
 
 		// wait a little so that changes get committed to the index - normal query will now be able to find the document.
 		Thread.sleep(3010);
-		assertThat(operations.queryForObject("techproducts", query, Product.class).isPresent(), is(true));
+		assertThat(operations.queryForObject("solr/techproducts", query, Product.class).isPresent(), is(true));
 	}
 }

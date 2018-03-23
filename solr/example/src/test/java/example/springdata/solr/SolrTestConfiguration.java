@@ -23,6 +23,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -62,5 +63,6 @@ public class SolrTestConfiguration extends AbstractSolrConfiguration{
 		repo.deleteAll(); // This needs to be added here to avoid
 		doInitTestData(repo);
 	}
+
 
 }
