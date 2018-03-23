@@ -36,45 +36,31 @@ import org.springframework.data.solr.repository.config.EnableSolrRepositories;
  */
 @SpringBootApplication
 @EnableSolrRepositories(schemaCreationSupport = true)
-public class SolrTestConfiguration {
+public class SolrTestConfiguration extends AbstractSolrConfiguration{
 
-	@Autowired CrudRepository<Product, String> repo;
+	@Autowired
+	CrudRepository<Product, String> repo;
 
-	public @Bean SolrTemplate solrTemplate() {
+	@Bean
+	public SolrTemplate solrTemplate() {
 		return new SolrTemplate(new HttpSolrClient.Builder().withBaseSolrUrl("http://localhost:8983/solr").build());
 	}
 
 	/**
 	 * Remove test data when context is shut down.
 	 */
-	public @PreDestroy void deleteDocumentsOnShutdown() {
+	@PreDestroy
+	public void deleteDocumentsOnShutdown() {
 		repo.deleteAll();
 	}
 
 	/**
 	 * Initialize Solr instance with test data once context has started.
 	 */
-	public @PostConstruct void initWithTestData() {
+	@PostConstruct
+	public void initWithTestData() {
 		repo.deleteAll(); // This needs to be added here to avoid
 		doInitTestData(repo);
 	}
 
-	protected void doInitTestData(CrudRepository<Product, String> repository) {
-
-		IntStream.range(0, 100)
-				.forEach(index -> {
-					Product p = new Product();
-					p.setId("p-" + index);
-					p.setName("name-" + index);
-					repository.save(p);
-				});
-	}
-
-	/**
-	 * This function helps to clean all.
-	 * @param repository
-	 */
-	protected void deleteAllData(CrudRepository<Product, String> repository){
-		repository.deleteAll();
-	}
 }
